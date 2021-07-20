@@ -1,0 +1,20 @@
+version: '3.3'
+
+services:
+  postgis:
+    container_name: sedona-postgis
+    build:
+      context: ./infrastructure/postgis
+    volumes:
+      - ./data:/var/lib/postgresql
+    env_file:
+      - ./infrastructure/postgis/postgre_variables.env
+    ports:
+      - "5434:5432"
+
+  sedona:
+    container_name: sedona
+    build:
+      context: ./infrastructure/sedona
+    ports:
+      - "8080:8888"
