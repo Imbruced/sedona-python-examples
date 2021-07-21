@@ -57,6 +57,8 @@ RUN mamba install --quiet --yes \
     fix-permissions "/home/${NB_USER}"
 
 RUN pip3 install apache-sedona geopandas
-
+RUN mkdir /home/${NB_USER}/notebooks
+RUN rm -r /home/${NB_USER}/work
+RUN chmod +777 /home/${NB_USER}/notebooks
 
 WORKDIR "${HOME}"
