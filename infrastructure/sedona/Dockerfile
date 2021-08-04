@@ -28,14 +28,13 @@ RUN apt-get update --yes && \
 WORKDIR /tmp
 RUN wget -q "https://archive.apache.org/dist/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" && \
     tar xzf "spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" -C /usr/local --owner root --group root --no-same-owner && \
-    rm "spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz"
-
-RUN wget "https://repo1.maven.org/maven2/org/apache/sedona/sedona-python-adapter-3.0_2.12/1.0.1-incubating/sedona-python-adapter-3.0_2.12-1.0.1-incubating.jar"
-RUN cp sedona-python-adapter-3.0_2.12-1.0.1-incubating.jar ${SPARK_HOME}/jars
-
-WORKDIR /usr/local
+    rm "spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" && \
+    wget "https://repo1.maven.org/maven2/org/apache/sedona/sedona-python-adapter-3.0_2.12/1.0.1-incubating/sedona-python-adapter-3.0_2.12-1.0.1-incubating.jar" && \
+    cp /tmp/sedona-python-adapter-3.0_2.12-1.0.1-incubating.jar ${SPARK_HOME}/jars
 
 ENV SPARK_HOME=/usr/local/spark
+WORKDIR /usr/local
+
 ENV SPARK_OPTS="--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M --driver-java-options=-Dlog4j.logLevel=info" \
     PATH="${PATH}:${SPARK_HOME}/bin"
 
@@ -61,4 +60,5 @@ RUN mkdir /home/${NB_USER}/notebooks
 RUN rm -r /home/${NB_USER}/work
 RUN chmod +777 /home/${NB_USER}/notebooks
 
+EXPOSE 4040-4100
 WORKDIR "${HOME}"
