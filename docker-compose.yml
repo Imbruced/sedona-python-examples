@@ -19,7 +19,7 @@ services:
       args:
         - NB_USER=sedona
     ports:
-      - "8080:8888"
+      - "8081:8888"
       - "4040-4100:4040-4100"
     volumes:
       - ./notebooks:/home/jovyan/notebooks
