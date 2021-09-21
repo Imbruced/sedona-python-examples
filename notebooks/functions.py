@@ -1,20 +1,24 @@
-from pyspark.sql.functions import array, col, explode, lit, struct
-from pyspark.sql import DataFrame
-from typing import Iterable
+from typing import List
+from shapely.geometry import MultiPolygon
+from shapely.geometry import Polygon
+from shapely.geometry import Point
 
-
-def melt(
-        df: DataFrame, 
-        id_vars: Iterable[str], value_vars: Iterable[str], 
-        var_name: str="variable", value_name: str="value"
-) -> DataFrame:
-    _vars_and_vals = array(*(
-        struct(lit(c).alias(var_name), col(c).cast("string").alias(value_name)) 
-        for c in value_vars))
-
-    # Add to the DataFrame and explode
-    _tmp = df.withColumn("_vars_and_vals", explode(_vars_and_vals))
-
-    cols = id_vars + [
-            col("_vars_and_vals")[x].cast("string").alias(x) for x in [var_name, value_name]]
-    return _tmp.select(*cols)
+def create_grid(rows: int, cols: int, grid_size: float, origin_x:float, origin_y:float) -> List:
+    grids = []
+    for r in range(rows):
+        for c in range(cols):
+            polygon = Polygon(
+                    [
+                        Point(c*grid_size+origin_x, r*grid_size+origin_y),
+                        Point(c*grid_size+origin_x, (r+1)*grid_size+origin_y),
+                        Point((c+1)*grid_size+origin_x, (r+1)*grid_size+origin_y),
+                        Point((c+1)*grid_size+origin_x, r*grid_size+origin_y),
+                        Point(c*grid_size+origin_x, r*grid_size+origin_y)
+                    ]
+                    
+                )
+            grids.append(
+                polygon
+            )
+    return MultiPolygon(grids)
+            
